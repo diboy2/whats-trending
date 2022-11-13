@@ -1,0 +1,5 @@
+type TrendingContent @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  text: String
+  url: String
+}
