@@ -2,15 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import FacebookLogin from 'react-facebook-login';
 import reportWebVitals from './reportWebVitals';
 import { Amplify } from "aws-amplify";
 import awsconfig from "./aws-exports";
 
 Amplify.configure(awsconfig);
-const responseFacebook = (response) => {
-  console.log(response);
-}
+// const responseFacebook = (response) => {
+//   console.log(response);
+// }
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <FacebookLogin

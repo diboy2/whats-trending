@@ -5,7 +5,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
 
-function TitlebarImageList() {
+function TrendingContent() {
   return (
     <ImageList cols={4}>
       <ImageListItem key="Subheader" cols={4}>
@@ -112,4 +112,4 @@ const itemData = [
 ];
 
 
-export default TitlebarImageList;
+export default TrendingContent;
