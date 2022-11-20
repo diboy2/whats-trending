@@ -1,6 +1,6 @@
-const fetchHashtagId = async (user_id, ig_hashtag_search) => {
+const fetchHashtagId = async (user_id, ig_hashtag_search, accessToken) => {
     const response = await fetch(
-        `graph.facebook.com/ig_hashtag_search?user_id=${user_id}&q=${ig_hashtag_search}`,{
+        `https://graph.facebook.com/v15.0/ig_hashtag_search?user_id=${user_id}&q=${ig_hashtag_search}&access_token=${accessToken}`,{
         method: "GET"
     });
     if(response.ok) {

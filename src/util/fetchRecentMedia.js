@@ -1,6 +1,6 @@
-const fetchRecentMedia = async (hashtag_id) => {
+const fetchRecentMedia = async (hashtag_id, user_id, accessToken) => {
     const response = await fetch(
-        `graph.facebook.com/${hashtag_id}/recent_media?user_id=${user_id}&fields=media_url`,{
+        `https://graph.facebook.com/v15.0/${hashtag_id}/recent_media?user_id=${user_id}&fields=media_url,caption,permalink&access_token=${accessToken}`,{
         method: "GET"
     });
     if(response.ok) {

@@ -4,6 +4,8 @@ import fetchUserPages from './util/fetchUserPages';
 import fetchInstaBusinessAccount from './util/fetchInstaBusinessAccount';
 import fetchUserMediaObjects from './util/fetchUserMediaObjects';
 import TrendingContent from './components/TrendingContent.js';
+import fetchHashtagId from './util/fetchHashtagId';
+import fetchRecentMedia from './util/fetchRecentMedia';
 
 const getLoginStatus = () => {
   return new Promise((resolve) => {
@@ -17,7 +19,8 @@ const login = () => {
   return new Promise((resolve) => { 
     FB.login((response) => { // eslint-disable-line 
       resolve(response);
-    });
+    },
+    {scope: 'instagram_basic,pages_show_list'});
   });
 };
 
@@ -27,6 +30,8 @@ function App() {
   const [ userPagesResponse, setUserPagesResponse] = useState(null);
   const [ instaBusinessAccountResponse, setInstaBusinessAccountResponse] = useState(null);
   const [ userMediaObjectsResponse, setUserMediaObjectsResponse] = useState(null);
+  const [ hashtagIdResponse, setHashtagIdResponse] = useState(null);
+  const [ recentMediaResponse, setRecentMediaResponse] = useState(null);
   const [ content, setContent ] = useState([]); 
   useEffect(() => {
     const getPosts = async () => {
@@ -49,7 +54,15 @@ function App() {
           response = await fetchUserMediaObjects(instagram_account_id, accessToken);
           setUserMediaObjectsResponse(response);
           console.log("Instagram Media Objects: ", response);
+          response = await fetchHashtagId(instagram_account_id, "today", accessToken);
+          console.log("Hashtag Id: ", response);
+          setHashtagIdResponse(response);
+          const hashtagId = response.data[0].id;
+          response = await fetchRecentMedia(hashtagId, instagram_account_id, accessToken);
+          console.log("Recent media: ", response);
+          setRecentMediaResponse(response);
           setContent(response.data);
+
         } else {
           console.info("Failed to login");
         } 
@@ -97,7 +110,6 @@ function App() {
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
             <Tab label="Item One" {...a11yProps(0)} />
             <Tab label="Item Two" {...a11yProps(1)} />
-            <Tab label="Item Three" {...a11yProps(2)} />
           </Tabs>
         </Box> */}
         <TrendingContent content={content}/>
