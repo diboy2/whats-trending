@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import fetchUserPages from './util/fetchUserPages';
 import fetchInstaBusinessAccount from './util/fetchInstaBusinessAccount';
+import fetchUserMediaObjects from './util/fetchUserMediaObjects';
 import TrendingContent from './components/TrendingContent.js';
 
 const getLoginStatus = () => {
@@ -25,7 +26,8 @@ function App() {
   const [ loginResponse, setLoginResponse ] = useState(null);
   const [ userPagesResponse, setUserPagesResponse] = useState(null);
   const [ instaBusinessAccountResponse, setInstaBusinessAccountResponse] = useState(null);
-  
+  const [ userMediaObjectsResponse, setUserMediaObjectsResponse] = useState(null);
+  const [ content, setContent ] = useState([]); 
   useEffect(() => {
     const getPosts = async () => {
       let response = await getLoginStatus();
@@ -34,6 +36,7 @@ function App() {
       if(response?.status !== "connected") {
         response = await login();
         setLoginResponse(response);
+        const accessToken = response.authResponse.accessToken;
         console.log("Login response: ", response);
         if (response.status === 'connected') {
           response = await fetchUserPages(response.authResponse.accessToken);
@@ -43,6 +46,10 @@ function App() {
           setInstaBusinessAccountResponse(response);
           console.log("Instagram Business Account: ", response);
           const instagram_account_id = response?.instagram_business_account?.id;
+          response = await fetchUserMediaObjects(instagram_account_id, accessToken);
+          setUserMediaObjectsResponse(response);
+          console.log("Instagram Media Objects: ", response);
+          setContent(response.data);
         } else {
           console.info("Failed to login");
         } 
@@ -93,7 +100,7 @@ function App() {
             <Tab label="Item Three" {...a11yProps(2)} />
           </Tabs>
         </Box> */}
-        <TrendingContent />
+        <TrendingContent content={content}/>
       </main>
     </div>
   );
