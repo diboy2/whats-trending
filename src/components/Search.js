@@ -1,21 +1,26 @@
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
-import ImageListItemBar from '@mui/material/ImageListItemBar';
-import IconButton from '@mui/material/IconButton';
+import { useState } from 'react';
+import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
+import SendIcon from '@mui/icons-material/Send';
+import TextField from '@mui/material/TextField';
 
-function Filters() {
+function Search({ fetchHashtagResults, instaAccountId, accessToken }) {
+  const [ searchValue, setSearchValue ] = useState("");
   return (
-    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-      <Tabs aria-label="basic tabs example">
-        <Tab label="Item One" />
-        <Tab label="Item Two" />
-      </Tabs>
-    </Box>
+    <Box sx={{ borderBottom: 1, borderColor: 'divider', padding: "16px" }}>
+        <TextField 
+          variant="outlined" 
+          fullWidth={true}
+          value={searchValue}
+          onChange={(event) => setSearchValue(event.target.value) }
+          InputProps={{
+            endAdornment: <Button 
+            onClick={() => { setSearchValue("");fetchHashtagResults(searchValue, instaAccountId, accessToken);}}><SendIcon/></Button>}}
+          />
+      </Box>
+
   );
 }
 
 
-export default Filters;
+export default Search;

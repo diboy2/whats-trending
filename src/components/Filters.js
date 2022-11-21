@@ -6,12 +6,14 @@ import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 
-function Filters() {
+function Filters({ filters }) {
+  const handleChange = () => {};
   return (
     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-      <Tabs aria-label="basic tabs example">
-        <Tab label="Item One" />
-        <Tab label="Item Two" />
+      <Tabs value={filters.length-1} aria-label="basic tabs example">
+        {
+        filters.map((filter,index)=> <Tab label={filter} value={index}/>)
+        }
       </Tabs>
     </Box>
   );

@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import './App.css';
 import fetchUserPages from './util/fetchUserPages';
 import fetchInstaBusinessAccount from './util/fetchInstaBusinessAccount';
-import fetchUserMediaObjects from './util/fetchUserMediaObjects';
 import TrendingContent from './components/TrendingContent.js';
 import fetchHashtagId from './util/fetchHashtagId';
 import fetchRecentMedia from './util/fetchRecentMedia';
-import { Box, Button, TextField } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+import Filters from './components/Filters';
+import Search from './components/Search';
+
+import './App.css';
+
 const getLoginStatus = () => {
   return new Promise((resolve) => {
     FB.getLoginStatus((response) => { // eslint-disable-line 
@@ -29,14 +30,15 @@ function App() {
   const [ accessToken, setAccessToken] = useState(null);
   const [ pageId, setPageId] = useState(null);
   const [ instaAccountId, setInstaAccountId] = useState(null);
-  const [ content, setContent ] = useState([]); 
-  const [ searchValue, setSearchValue ] = useState("");
+  const [ content, setContent ] = useState([]);
+  const [ filters, setFilters] = useState([])
   const fetchHashtagResults = async (searchValue, instaAccountId, accessToken ) => {
     let response = await fetchHashtagId(instaAccountId, searchValue, accessToken);
     console.log("Hashtag Id: ", response);
     const hashtagId = response.data[0].id;
     response = await fetchRecentMedia(hashtagId, instaAccountId, accessToken);
     console.log("Recent media: ", response);
+    setFilters([...filters, searchValue]);
     setContent(response.data.filter((e) => e.media_type === "IMAGE"));
   };
   useEffect(() => {
@@ -72,17 +74,12 @@ function App() {
         </p>
       </header>
       <main>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', padding: "16px" }}>
-          <TextField 
-            variant="outlined" 
-            fullWidth={true}
-            value={searchValue}
-            onChange={(event) => setSearchValue(event.target.value) }
-            InputProps={{
-              endAdornment: <Button 
-              onClick={() => { fetchHashtagResults(searchValue, instaAccountId, accessToken)}}><SendIcon/></Button>}}
-            />
-        </Box>
+        <Search 
+          fetchHashtagResults={fetchHashtagResults}
+          instaAccountId={instaAccountId}
+          accessToken={accessToken}
+          />
+        <Filters filters={filters}/>
         <TrendingContent content={content}/>
       </main>
     </div>
