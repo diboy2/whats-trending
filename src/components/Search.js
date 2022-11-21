@@ -9,13 +9,24 @@ function Search({ fetchHashtagResults, instaAccountId, accessToken }) {
   return (
     <Box sx={{ borderBottom: 1, borderColor: 'divider', padding: "16px" }}>
         <TextField 
-          variant="outlined" 
+          variant="outlined"
+          size='small' 
           fullWidth={true}
           value={searchValue}
           onChange={(event) => setSearchValue(event.target.value) }
           InputProps={{
-            endAdornment: <Button 
-            onClick={() => { setSearchValue("");fetchHashtagResults(searchValue, instaAccountId, accessToken);}}><SendIcon/></Button>}}
+            endAdornment: 
+            <Button 
+              onClick={
+                () => { 
+                  setSearchValue("");
+                  fetchHashtagResults(searchValue, instaAccountId, accessToken);
+                }
+              }
+            >
+              <SendIcon/>
+            </Button>
+            }}
           />
       </Box>
 

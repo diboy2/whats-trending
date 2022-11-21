@@ -1,8 +1,11 @@
 
-
+.App {
+  display: flex;
+  flex-direction: column;
+}
 .App-header {
   background-color: #282c34;
-  min-height: 10vh;
+  height: 10vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,15 +14,8 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.App main {
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
 }

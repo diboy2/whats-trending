@@ -31,15 +31,18 @@ function App() {
   const [ pageId, setPageId] = useState(null);
   const [ instaAccountId, setInstaAccountId] = useState(null);
   const [ content, setContent ] = useState([]);
-  const [ filters, setFilters] = useState([])
+  const [ filters, setFilters] = useState([]);
+  const [ filterValue, setFilterValue] = useState("today");
+  const [ isLoading, setIsLoading] = useState(true);
   const fetchHashtagResults = async (searchValue, instaAccountId, accessToken ) => {
+    setIsLoading(true);
     let response = await fetchHashtagId(instaAccountId, searchValue, accessToken);
     console.log("Hashtag Id: ", response);
     const hashtagId = response.data[0].id;
     response = await fetchRecentMedia(hashtagId, instaAccountId, accessToken);
     console.log("Recent media: ", response);
-    setFilters([...filters, searchValue]);
     setContent(response.data.filter((e) => e.media_type === "IMAGE"));
+    setIsLoading(false);
   };
   useEffect(() => {
     const getPosts = async () => {
@@ -62,7 +65,8 @@ function App() {
       console.log("Instagram Business Account: ", response);
       let instaAccountId = response?.instagram_business_account?.id;
       setInstaAccountId(instaAccountId);
-      await fetchHashtagResults("today", instaAccountId, accessToken);
+      await fetchHashtagResults(filterValue, instaAccountId, accessToken);
+      setFilters([...filters, filterValue]);
     };
     getPosts();
   },[]);
@@ -75,12 +79,24 @@ function App() {
       </header>
       <main>
         <Search 
-          fetchHashtagResults={fetchHashtagResults}
-          instaAccountId={instaAccountId}
-          accessToken={accessToken}
+          fetchHashtagResults={
+            (searchValue) => {
+              fetchHashtagResults(searchValue, instaAccountId, accessToken);
+              setFilters([...filters, searchValue]);
+              setFilterValue(searchValue);
+            }
+          }
           />
-        <Filters filters={filters}/>
-        <TrendingContent content={content}/>
+        <Filters 
+          filterValue={filterValue} 
+          filters={filters} 
+          filterResults={
+            (filter) => {
+              setFilterValue(filter);  
+              fetchHashtagResults(filter, instaAccountId, accessToken); 
+            }
+          }/>
+        <TrendingContent content={content} isLoading={isLoading}/>
       </main>
     </div>
   );
