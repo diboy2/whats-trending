@@ -6,7 +6,8 @@ import fetchUserMediaObjects from './util/fetchUserMediaObjects';
 import TrendingContent from './components/TrendingContent.js';
 import fetchHashtagId from './util/fetchHashtagId';
 import fetchRecentMedia from './util/fetchRecentMedia';
-
+import { Box, Button, TextField } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
 const getLoginStatus = () => {
   return new Promise((resolve) => {
     FB.getLoginStatus((response) => { // eslint-disable-line 
@@ -25,93 +26,63 @@ const login = () => {
 };
 
 function App() {
-  const [ loginStatusResponse, setLoginStatusResponse  ] = useState(null);
-  const [ loginResponse, setLoginResponse ] = useState(null);
-  const [ userPagesResponse, setUserPagesResponse] = useState(null);
-  const [ instaBusinessAccountResponse, setInstaBusinessAccountResponse] = useState(null);
-  const [ userMediaObjectsResponse, setUserMediaObjectsResponse] = useState(null);
-  const [ hashtagIdResponse, setHashtagIdResponse] = useState(null);
-  const [ recentMediaResponse, setRecentMediaResponse] = useState(null);
+  const [ accessToken, setAccessToken] = useState(null);
+  const [ pageId, setPageId] = useState(null);
+  const [ instaAccountId, setInstaAccountId] = useState(null);
   const [ content, setContent ] = useState([]); 
+  const [ searchValue, setSearchValue ] = useState("");
+  const fetchHashtagResults = async (searchValue, instaAccountId, accessToken ) => {
+    let response = await fetchHashtagId(instaAccountId, searchValue, accessToken);
+    console.log("Hashtag Id: ", response);
+    const hashtagId = response.data[0].id;
+    response = await fetchRecentMedia(hashtagId, instaAccountId, accessToken);
+    console.log("Recent media: ", response);
+    setContent(response.data.filter((e) => e.media_type === "IMAGE"));
+  };
   useEffect(() => {
     const getPosts = async () => {
       let response = await getLoginStatus();
-      setLoginStatusResponse(response);
       console.log("Login status response: ", response);
-      if(response?.status !== "connected") {
+      let accessToken;
+      if(response?.status === "connected") {
+        accessToken = response.authResponse.accessToken;
+      } else {
         response = await login();
-        setLoginResponse(response);
-        const accessToken = response.authResponse.accessToken;
         console.log("Login response: ", response);
-        if (response.status === 'connected') {
-          response = await fetchUserPages(response.authResponse.accessToken);
-          setUserPagesResponse(response);
-          console.log("User Pages response: ", response);
-          response = await fetchInstaBusinessAccount(response.data[0].id, response.data[0].access_token);
-          setInstaBusinessAccountResponse(response);
-          console.log("Instagram Business Account: ", response);
-          const instagram_account_id = response?.instagram_business_account?.id;
-          response = await fetchUserMediaObjects(instagram_account_id, accessToken);
-          setUserMediaObjectsResponse(response);
-          console.log("Instagram Media Objects: ", response);
-          response = await fetchHashtagId(instagram_account_id, "today", accessToken);
-          console.log("Hashtag Id: ", response);
-          setHashtagIdResponse(response);
-          const hashtagId = response.data[0].id;
-          response = await fetchRecentMedia(hashtagId, instagram_account_id, accessToken);
-          console.log("Recent media: ", response);
-          setRecentMediaResponse(response);
-          setContent(response.data);
-
-        } else {
-          console.info("Failed to login");
-        } 
+        accessToken = response.authResponse.accessToken;
       }
+      setAccessToken(accessToken);
+      response = await fetchUserPages(response.authResponse.accessToken);
+      console.log("User Pages response: ", response);
+      let pageId = response.data[0].id;
+      setPageId(pageId);
+      response = await fetchInstaBusinessAccount(pageId, accessToken);
+      console.log("Instagram Business Account: ", response);
+      let instaAccountId = response?.instagram_business_account?.id;
+      setInstaAccountId(instaAccountId);
+      await fetchHashtagResults("today", instaAccountId, accessToken);
     };
     getPosts();
-    // FB.getLoginStatus(function(response) { // eslint-disable-line 
-    //   setLoginStatusResponse(response)
-    //   console.log("Login status response: ", response);
-      // if(response?.status !== "connected") {
-      //   FB.login(function(response) { // eslint-disable-line 
-      //       setLoginResponse(response);
-      //       console.log("Login response: ", response);
-      //       if (response.status === 'connected') {
-      //         const userPagesResponse = await fetchUserPages(response.authResponse.accessToken);
-      //         console.log("User Pages response: ", userPagesResponse);
-      //       } else {
-      //         console.info("Failed to login");
-      //       }
-      //     },
-      //     {scope: 'instagram_basic,pages_show_list'}
-      //   ); // eslint-disable-line 
-      // }
-      
-    // });
   },[]);
   return (
     <div className="App">
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+      <header className="App-header">
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          What's Trending
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header> */}
+      </header>
       <main>
-        {/* <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-            <Tab label="Item One" {...a11yProps(0)} />
-            <Tab label="Item Two" {...a11yProps(1)} />
-          </Tabs>
-        </Box> */}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', padding: "16px" }}>
+          <TextField 
+            variant="outlined" 
+            fullWidth={true}
+            value={searchValue}
+            onChange={(event) => setSearchValue(event.target.value) }
+            InputProps={{
+              endAdornment: <Button 
+              onClick={() => { fetchHashtagResults(searchValue, instaAccountId, accessToken)}}><SendIcon/></Button>}}
+            />
+        </Box>
         <TrendingContent content={content}/>
       </main>
     </div>
