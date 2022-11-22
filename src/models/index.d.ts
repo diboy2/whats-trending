@@ -2,28 +2,26 @@ import { ModelInit, MutableModel } from "@aws-amplify/datastore";
 // @ts-ignore
 import { LazyLoading, LazyLoadingDisabled } from "@aws-amplify/datastore";
 
-type TrendingContentMetaData = {
+type FilterMetaData = {
   readOnlyFields: 'createdAt' | 'updatedAt';
 }
 
-type EagerTrendingContent = {
+type EagerFilter = {
   readonly id: string;
   readonly text?: string | null;
-  readonly url?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
 
-type LazyTrendingContent = {
+type LazyFilter = {
   readonly id: string;
   readonly text?: string | null;
-  readonly url?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
 
-export declare type TrendingContent = LazyLoading extends LazyLoadingDisabled ? EagerTrendingContent : LazyTrendingContent
+export declare type Filter = LazyLoading extends LazyLoadingDisabled ? EagerFilter : LazyFilter
 
-export declare const TrendingContent: (new (init: ModelInit<TrendingContent, TrendingContentMetaData>) => TrendingContent) & {
-  copyOf(source: TrendingContent, mutator: (draft: MutableModel<TrendingContent, TrendingContentMetaData>) => MutableModel<TrendingContent, TrendingContentMetaData> | void): TrendingContent;
+export declare const Filter: (new (init: ModelInit<Filter, FilterMetaData>) => Filter) & {
+  copyOf(source: Filter, mutator: (draft: MutableModel<Filter, FilterMetaData>) => MutableModel<Filter, FilterMetaData> | void): Filter;
 }

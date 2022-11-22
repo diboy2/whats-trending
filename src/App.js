@@ -6,6 +6,10 @@ import fetchHashtagId from './util/fetchHashtagId';
 import fetchRecentMedia from './util/fetchRecentMedia';
 import Filters from './components/Filters';
 import Search from './components/Search';
+import { DataStore } from '@aws-amplify/datastore';
+import { Filter } from './models';
+
+
 
 import './App.css';
 
@@ -45,6 +49,12 @@ function App() {
     setIsLoading(false);
   };
   useEffect(() => {
+    const getFilters = async () => {
+      const models = await DataStore.query(Filter);
+      console.log(models);
+      setFilters(models);
+    };
+    
     const getPosts = async () => {
       let response = await getLoginStatus();
       console.log("Login status response: ", response);
@@ -68,6 +78,7 @@ function App() {
       await fetchHashtagResults(filterValue, instaAccountId, accessToken);
       setFilters([...filters, filterValue]);
     };
+    getFilters();
     getPosts();
   },[]);
   return (

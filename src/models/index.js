@@ -4,8 +4,8 @@ import { schema } from './schema';
 
 
 
-const { TrendingContent } = initSchema(schema);
+const { Filter } = initSchema(schema);
 
 export {
-  TrendingContent
+  Filter
 };

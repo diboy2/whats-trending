@@ -1,7 +1,7 @@
 export const schema = {
     "models": {
-        "TrendingContent": {
-            "name": "TrendingContent",
+        "Filter": {
+            "name": "Filter",
             "fields": {
                 "id": {
                     "name": "id",
@@ -12,13 +12,6 @@ export const schema = {
                 },
                 "text": {
                     "name": "text",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": false,
-                    "attributes": []
-                },
-                "url": {
-                    "name": "url",
                     "isArray": false,
                     "type": "String",
                     "isRequired": false,
@@ -42,7 +35,7 @@ export const schema = {
                 }
             },
             "syncable": true,
-            "pluralName": "TrendingContents",
+            "pluralName": "Filters",
             "attributes": [
                 {
                     "type": "model",
@@ -70,5 +63,5 @@ export const schema = {
     "enums": {},
     "nonModels": {},
     "codegenVersion": "3.3.1",
-    "version": "c48462ace45a9195af8549e88a8da442"
+    "version": "b382e8d27e61f3e9455c889fd99d6d1a"
 };
