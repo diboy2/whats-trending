@@ -10,7 +10,6 @@ import { DataStore } from '@aws-amplify/datastore';
 import { Filter } from './models';
 
 
-
 import './App.css';
 
 const getLoginStatus = () => {
@@ -32,11 +31,10 @@ const login = () => {
 
 function App() {
   const [ accessToken, setAccessToken] = useState(null);
-  const [ pageId, setPageId] = useState(null);
   const [ instaAccountId, setInstaAccountId] = useState(null);
   const [ content, setContent ] = useState([]);
   const [ filters, setFilters] = useState([]);
-  const [ filterValue, setFilterValue] = useState("today");
+  const [ filterValue, setFilterValue] = useState({ id: "0", text: "today"});
   const [ isLoading, setIsLoading] = useState(true);
   const fetchHashtagResults = async (searchValue, instaAccountId, accessToken ) => {
     setIsLoading(true);
@@ -50,9 +48,7 @@ function App() {
   };
   useEffect(() => {
     const getFilters = async () => {
-      const models = await DataStore.query(Filter);
-      console.log(models);
-      setFilters(models);
+      return await DataStore.query(Filter);
     };
     
     const getPosts = async () => {
@@ -70,17 +66,16 @@ function App() {
       response = await fetchUserPages(response.authResponse.accessToken);
       console.log("User Pages response: ", response);
       let pageId = response.data[0].id;
-      setPageId(pageId);
       response = await fetchInstaBusinessAccount(pageId, accessToken);
       console.log("Instagram Business Account: ", response);
       let instaAccountId = response?.instagram_business_account?.id;
       setInstaAccountId(instaAccountId);
-      await fetchHashtagResults(filterValue, instaAccountId, accessToken);
-      setFilters([...filters, filterValue]);
+      await fetchHashtagResults(filterValue.text, instaAccountId, accessToken);
+      setFilters([filterValue, ...(await getFilters())]);
     };
-    getFilters();
     getPosts();
-  },[]);
+  },[]); // eslint-disable-line 
+
   return (
     <div className="App">
       <header className="App-header">
@@ -91,20 +86,22 @@ function App() {
       <main>
         <Search 
           fetchHashtagResults={
-            (searchValue) => {
-              fetchHashtagResults(searchValue, instaAccountId, accessToken);
-              setFilters([...filters, searchValue]);
-              setFilterValue(searchValue);
+            async (searchValue) => {
+              const filter = await DataStore.save(new Filter({ text: searchValue }));
+              await fetchHashtagResults(filter.text, instaAccountId, accessToken);
+              setFilters([...filters, filter]);
+              setFilterValue(filter);
             }
           }
           />
-        <Filters 
+        <Filters
+          setFilters={setFilters} 
           filterValue={filterValue} 
           filters={filters} 
           filterResults={
             (filter) => {
               setFilterValue(filter);  
-              fetchHashtagResults(filter, instaAccountId, accessToken); 
+              fetchHashtagResults(filter.text, instaAccountId, accessToken); 
             }
           }/>
         <TrendingContent content={content} isLoading={isLoading}/>

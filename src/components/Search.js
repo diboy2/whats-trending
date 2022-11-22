@@ -13,7 +13,8 @@ function Search({ fetchHashtagResults, instaAccountId, accessToken }) {
           size='small' 
           fullWidth={true}
           value={searchValue}
-          onChange={(event) => setSearchValue(event.target.value) }
+          placeholder="Enter A Trending Word"
+          onChange={(event) => setSearchValue(event.target.value.trim()) }
           InputProps={{
             endAdornment: 
             <Button 
