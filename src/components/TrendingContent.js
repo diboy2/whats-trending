@@ -17,7 +17,7 @@ function TrendingContent({ content, isLoading }) {
       { 
         isLoading ?
         <CircularProgress /> :
-        <ImageList cols={4}>
+        <ImageList cols={5}>
           {content.map((item, index) => (
             <ImageListItem key={index}>
               {
@@ -26,7 +26,7 @@ function TrendingContent({ content, isLoading }) {
                   src={`${item.media_url}&w=248&fit=crop&auto=format`}
                   srcSet={`${item.media_url}&w=248&fit=crop&auto=format&dpr=2 2x`}
                   maxWidth={248}
-                  alt={"Image failed to load"}
+                  alt={"Failed to load"}
                   loading="lazy"
                 />
               }
